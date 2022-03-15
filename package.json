@@ -1,0 +1,26 @@
+{
+  "name": "homework10_employeetracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhodge166/employeeTracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhodge166/employeeTracker/issues"
+  },
+  "homepage": "https://github.com/bhodge166/employeeTracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.1",
+    "mysql2": "^2.3.3"
+  }
+}
