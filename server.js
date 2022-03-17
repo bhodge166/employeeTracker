@@ -55,6 +55,41 @@ const roleQuestion = [
     type: "input",
   },
 ];
+const addEmployeeQuestion = [
+  {
+    message: "What is the employees first name?",
+    name: "first",
+    type: "input",
+  },
+  {
+    message: "What is the employees last name?",
+    name: "last",
+    type: "input",
+  },
+  {
+    message: "What is the employees role id?",
+    name: "role",
+    type: "input",
+  },
+  {
+    message: "Who is the employees manager id?",
+    name: "manager",
+    type: "input",
+  },
+];
+
+const updateQuestion = [
+  {
+    message: "What employee do you want to update?",
+    name: "employee",
+    type: "input",
+  },
+  {
+    message: "What is the rold id you would like to change to?",
+    name: "roleid",
+    type: "input",
+  },
+];
 
 function initPrompt() {
   inquirer.prompt(initQuestions).then((data) => {
@@ -75,18 +110,16 @@ function initPrompt() {
         rolePrompt();
         break;
       case "Add an Employee":
-        addEmployee();
+        EmployeePrompt();
         break;
       case "Update an Employee Role":
-        updateEmployeeRole();
+        updateEmployee();
         break;
       case "Quit":
         return;
     }
   });
 }
-
-initPrompt();
 
 function getDepartment() {
   db.query("SELECT * FROM department", (err, data) => {
@@ -151,3 +184,44 @@ function addRole(data) {
       }
     });
 }
+
+function EmployeePrompt() {
+  inquirer.prompt(addEmployeeQuestion).then((data) => {
+    addEmployee(data);
+  });
+}
+
+function addEmployee(data) {
+  db.query(
+    `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${data.first}", "${data.last}", ${data.role}, ${data.manager})`,
+    (err, data) => {
+      console.log(data);
+      initPrompt();
+    }
+  );
+}
+
+function updateEmployee() {
+  inquirer.prompt(updateQuestion).then((data) => verifyEmployee(data));
+}
+
+function verifyEmployee(data) {
+  db.promise()
+    .query(
+      "Select employee.id, CONCAT(employee.first_name, ' ', employee.last_name) AS employee FROM employee"
+    )
+    .then((res) => {
+      const filterRes = res[0].filter((res) => res.employee === data.employee);
+      if (filterRes.length > 0) {
+        const employeenumber = filterRes[0].id;
+        db.query(
+          `UPDATE employee SET role_id = ${data.roleid} WHERE id = ${employeenumber}`,
+          (err, data) => {
+            console.log(data);
+            initPrompt();
+          }
+        );
+      }
+    });
+}
+initPrompt();
