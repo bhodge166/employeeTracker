@@ -30,6 +30,32 @@ const initQuestions = [
   },
 ];
 
+const deptQuestion = [
+  {
+    message: "What is the name of the department",
+    name: "department",
+    type: "input",
+  },
+];
+
+const roleQuestion = [
+  {
+    message: "What is the job title?",
+    name: "title",
+    type: "input",
+  },
+  {
+    message: "What is the salary of this position?",
+    name: "salary",
+    type: "number",
+  },
+  {
+    message: "What department does this role belong to?",
+    name: "department",
+    type: "input",
+  },
+];
+
 function initPrompt() {
   inquirer.prompt(initQuestions).then((data) => {
     switch (data.choice) {
@@ -43,10 +69,10 @@ function initPrompt() {
         getEmployees();
         break;
       case "Add a Department":
-        addDepartment();
+        departmentPrompt();
         break;
       case "Add a Role":
-        addRole();
+        rolePrompt();
         break;
       case "Add an Employee":
         addEmployee();
@@ -87,4 +113,41 @@ function getEmployees() {
       initPrompt();
     }
   );
+}
+
+function departmentPrompt() {
+  inquirer.prompt(deptQuestion).then((data) => addDepartment(data.department));
+}
+
+function addDepartment(data) {
+  db.query(`INSERT INTO department (name) VALUES ("${data}")`, (err, data) => {
+    console.log(data);
+    initPrompt();
+  });
+}
+
+function rolePrompt() {
+  inquirer.prompt(roleQuestion).then((data) => addRole(data));
+}
+
+function addRole(data) {
+  db.promise()
+    .query("Select * FROM department")
+    .then((res) => {
+      const filterRes = res[0].filter((res) => res.name === data.department);
+      if (filterRes.length > 0) {
+        const deptnumber = filterRes[0].id;
+        db.query(
+          `INSERT INTO role (title, salary, department_id) VALUES ("${data.title}", ${data.salary}, ${deptnumber})`,
+          (err, data) => {
+            console.log(data);
+            initPrompt();
+          }
+        );
+      } else {
+        db.promise()
+          .query(`INSERT INTO department (name) VALUES ("${data.department}")`)
+          .then(addRole(data));
+      }
+    });
 }
