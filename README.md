@@ -1,7 +1,5 @@
 # employeeTracker
 
-# noteTaker
-
 ![liscense shield](https://img.shields.io/badge/license-GPL3.0-blue)
 
 ## Description
